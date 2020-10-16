@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@cryptid/cryptid-js": "^1.0.1",
-    "ipfs": "^0.50.2"
+    "ipfs": "^0.50.2",
+    "readline-sync": "^1.4.10"
   }
 }

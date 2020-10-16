@@ -3,6 +3,8 @@
 const ipfs = require('ipfs')
 const fs = require('fs')
 const cryptid = require('@cryptid/cryptid-js')
+const readlineSync = require('readline-sync')
+const util = require('util')
 
 const FILE_NAME = 'hello.txt'
 const PEER_ID = { name: 'test_peer_id' }
@@ -20,29 +22,57 @@ async function main() {
   const ibeSetupResult = ibe.setup(cryptid.SecurityLevel.LOWEST)
   console.log('ID based encryption system initialized...\n')
 
-  const fileContents = readFile(FILE_NAME)
+  let input = ''
+  while (input != 'q') {
+    showMenu()
+    input = readlineSync.question('Please select a menu item (q to quit): ')
 
-  const encryptResult = ibe.encrypt(
-    ibeSetupResult.publicParameters, PEER_ID, fileContents)
-  //console.log(JSON.stringify(encryptResult))
+    switch(input) {
+      case '1':
+        const fileName = readlineSync.question('Enter file name: ')
+        const fileContents = readFile(fileName)
+        if (fileContents !== '') {
+          await addFileToIPFS(ipfsNode, fileName, fileContents)
+        }
+        break
 
-  const ipfsFile = await addFileToIPFS(
-    ipfsNode, FILE_NAME, JSON.stringify(encryptResult))
-  //console.log(ipfsFile.cid)
+      case 'q':
+        break
 
-  const ipfsFileContents = await ipfsCat(ipfsNode, ipfsFile.cid)
-  //console.log(ipfsFileContents.toString())
+      default:
+        console.log('\nInvalid input, select again.\n')
+    }
+  }
 
-  const extractResult = ibe.extract(
-    ibeSetupResult.publicParameters, ibeSetupResult.masterSecret, PEER_ID)
-  //console.log(extractResult)
+  //const fileContents = readFile(FILE_NAME)
 
-  const decryptResult = ibe.decrypt(
-    ibeSetupResult.publicParameters, extractResult.privateKey, encryptResult.ciphertext);
-  console.log(decryptResult.plaintext)
+  //const encryptResult = ibe.encrypt(
+  //  ibeSetupResult.publicParameters, PEER_ID, fileContents)
+
+  //const ipfsFile = await addFileToIPFS(
+  //  ipfsNode, FILE_NAME, JSON.stringify(encryptResult))
+
+  //const ipfsFileContents = await ipfsCat(ipfsNode, ipfsFile.cid)
+
+  //const extractResult = ibe.extract(
+  //  ibeSetupResult.publicParameters, ibeSetupResult.masterSecret, PEER_ID)
+
+  //const decryptResult = ibe.decrypt(
+  //  ibeSetupResult.publicParameters, extractResult.privateKey, encryptResult.ciphertext);
+  //console.log(decryptResult.plaintext)
+
+  console.log('program exiting...')
+  process.exit(0)
 }
 
 /* --------------- Helper Functions ----------------------- */
+function showMenu() {
+  console.log('1) Add a file to IPFS unecrypted.')
+  console.log('2) Add a file to IPFS encrypted.')
+  console.log('3) Decrypt a IPFS file.')
+  console.log('4) List peers on IPFS.')
+  console.log('\n')
+}
 
 async function addFileToIPFS(node, fileName, content) {
   const fileAdded = await node.add({
@@ -50,13 +80,19 @@ async function addFileToIPFS(node, fileName, content) {
     content: content
   })
 
-  console.log('Added file to IPFS:', fileAdded.path, fileAdded.cid)
+  console.log(util.format('Added file to IPFS: %s %s \n', fileAdded.path, fileAdded.cid))
   return fileAdded
 }
 
 // file must be in same directory as client.js
 function readFile(fileName) {
-  const data = fs.readFileSync(fileName, {encoding: 'utf8', flag: 'r'})
+  let data = ''
+  try {
+    data = fs.readFileSync(fileName, {encoding: 'utf8', flag: 'r'})
+  } catch (e) {
+    console.log('file does not exist!')
+  }
+
   return data
 }
 
