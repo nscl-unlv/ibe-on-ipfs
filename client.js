@@ -6,8 +6,15 @@ const cryptid = require('@cryptid/cryptid-js')
 const readlineSync = require('readline-sync')
 const util = require('util')
 
+
+/* TEST Variables */
 const FILE_NAME = 'hello.txt'
 const PEER_ID = { name: 'test_peer_id' }
+const peers = [
+  { name: 'Alice', id: '1234' },
+  { name: 'Sally', id: '5678' }
+]
+  
 
 main()
 
@@ -27,13 +34,23 @@ async function main() {
     showMenu()
     input = readlineSync.question('Please select a menu item (q to quit): ')
 
+    let fileName = ''
     switch(input) {
+      /* add unecrypted file */
       case '1':
-        const fileName = readlineSync.question('Enter file name: ')
+        fileName = readlineSync.question('Enter file name: ')
         const fileContents = readFile(fileName)
         if (fileContents !== '') {
           await addFileToIPFS(ipfsNode, fileName, fileContents)
         }
+        break
+
+      /* add ecrypted file */
+      case '2':
+        fileName = readlineSync.question('Enter file name: ')
+        showPeers(peers)
+        const peerSelection = readlineSync.question('Select a peer: ')
+        let peerId = getPeerId(peerSelection, peers)
         break
 
       case 'q':
@@ -67,11 +84,24 @@ async function main() {
 
 /* --------------- Helper Functions ----------------------- */
 function showMenu() {
+  console.log('')
   console.log('1) Add a file to IPFS unecrypted.')
   console.log('2) Add a file to IPFS encrypted.')
   console.log('3) Decrypt a IPFS file.')
   console.log('4) List peers on IPFS.')
   console.log('\n')
+}
+
+function showPeers(peers) {
+  console.log()
+  peers.forEach((peer, i) => {
+    console.log(util.format('%s) Name: %s, Peer ID: %s', i, peer.name, peer.id))
+  })
+  console.log()
+}
+
+function getPeerId(index, peers) {
+  return peers[index].id
 }
 
 async function addFileToIPFS(node, fileName, content) {
