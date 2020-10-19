@@ -30,28 +30,39 @@ async function main() {
   console.log('ID based encryption system initialized...\n')
 
   let input = ''
-  while (input != 'q') {
+  //while (input != 'q') {
     showMenu()
     input = readlineSync.question('Please select a menu item (q to quit): ')
 
     let fileName = ''
+    let fileContents = ''
     switch(input) {
       /* add unecrypted file */
       case '1':
         fileName = readlineSync.question('Enter file name: ')
-        const fileContents = readFile(fileName)
-        if (fileContents !== '') {
-          await addFileToIPFS(ipfsNode, fileName, fileContents)
-        }
+        fileContents = readFile(fileName)
+        await addFileToIPFS(ipfsNode, fileName, fileContents)
         break
 
       /* add ecrypted file */
       case '2':
         fileName = readlineSync.question('Enter file name: ')
+        fileContents = readFile(fileName)
         showPeers(peers)
         const peerSelection = readlineSync.question('Select a peer: ')
         let peerId = getPeerId(peerSelection, peers)
+        const encryptResult = ibe.encrypt(
+          ibeSetupResult.publicParameters, peerId, fileContents)
+        await addFileToIPFS(ipfsNode, fileName, 
+          JSON.stringify(encryptResult))
         break
+
+      /* TODO: decrypt a file */
+      case '3':
+        break
+
+      /* TODO: list Peers */
+      case '4':
 
       case 'q':
         break
@@ -59,17 +70,7 @@ async function main() {
       default:
         console.log('\nInvalid input, select again.\n')
     }
-  }
-
-  //const fileContents = readFile(FILE_NAME)
-
-  //const encryptResult = ibe.encrypt(
-  //  ibeSetupResult.publicParameters, PEER_ID, fileContents)
-
-  //const ipfsFile = await addFileToIPFS(
-  //  ipfsNode, FILE_NAME, JSON.stringify(encryptResult))
-
-  //const ipfsFileContents = await ipfsCat(ipfsNode, ipfsFile.cid)
+  //} trouble with whle loop
 
   //const extractResult = ibe.extract(
   //  ibeSetupResult.publicParameters, ibeSetupResult.masterSecret, PEER_ID)
@@ -78,8 +79,8 @@ async function main() {
   //  ibeSetupResult.publicParameters, extractResult.privateKey, encryptResult.ciphertext);
   //console.log(decryptResult.plaintext)
 
-  console.log('program exiting...')
-  process.exit(0)
+  //console.log('program exiting...')
+  //process.exit(0)
 }
 
 /* --------------- Helper Functions ----------------------- */
@@ -104,13 +105,14 @@ function getPeerId(index, peers) {
   return peers[index].id
 }
 
-async function addFileToIPFS(node, fileName, content) {
+async function addFileToIPFS(node, fileName, fileContent) {
   const fileAdded = await node.add({
     path: fileName,
-    content: content
+    content: fileContent
   })
 
-  console.log(util.format('Added file to IPFS: %s %s \n', fileAdded.path, fileAdded.cid))
+  console.log(util.format('Added file to IPFS: %s %s \n',
+    fileAdded.path, fileAdded.cid))
   return fileAdded
 }
 
