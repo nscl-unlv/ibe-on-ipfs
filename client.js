@@ -28,9 +28,11 @@ async function main() {
   /* create id based encryption (IBE) instance */
   console.log('Initializing ID Based Encryption system...\n')
   const ibe = await cryptid.getInstance()
-  const ibeSetupResult = ibe.setup(cryptid.SecurityLevel.LOWEST)
-  console.log(util.format('Saving ibe paramters to %s...', IBE_SETUP_FILE_NAME))
-  saveIbeParamters(IBE_SETUP_FILE_NAME, JSON.stringify(ibeSetupResult))
+
+  /* uncomment to create new ibe paramters */
+  //const ibeSetupResult = ibe.setup(cryptid.SecurityLevel.LOWEST)
+  //console.log(util.format('Saving ibe paramters to %s...', IBE_SETUP_FILE_NAME))
+  //saveIbeParamters(IBE_SETUP_FILE_NAME, JSON.stringify(ibeSetupResult))
 
   let input = ''
   //while (input != 'q') {
@@ -63,7 +65,7 @@ async function main() {
         peerSelection = readlineSync.question('Select a peer: ')
         peerId = getPeerId(peerSelection, peers)
 
-        /* load ibe paramters */
+        /* load ibe paramters. TODO: move to PKG */
         ibeSetup = JSON.parse(readFile(IBE_SETUP_FILE_NAME))
 
         /* encrypt */
@@ -75,24 +77,32 @@ async function main() {
           JSON.stringify(encryptResult))
         break
 
-      /* TODO: decrypt a file */
+      /* decrypt a file */
       case '3':
         showPeers(peers)
         peerSelection = readlineSync.question('Who are you? ')
         peerId = getPeerId(peerSelection, peers)
+
+
         console.log('Performing authenication...\n')
         console.log('Requesting private key from PKG...\n')
+
+        /* load ibe paramters. TODO: move to PKG */
+        ibeSetup = JSON.parse(readFile(IBE_SETUP_FILE_NAME))
         const extractResult = ibe.extract(
-          ibeSetupResult.publicParameters, ibeSetupResult.masterSecret, peerId)
+          ibeSetup.publicParameters, ibeSetup.masterSecret, peerId)
         console.log('Private key retrieved.\n')
 
+        /* get encrypted IPFS file */
         const cid = readlineSync.question('Enter the ipfs file CID: ')
         encryptResult = await ipfsCat(ipfsNode, cid)
 
-        //console.log('Decrypting file...\n')
-        //const decryptResult = ibe.decrypt(
-        //  ibeSetupResult.publicParameters, extractResult.privateKey,
-        //  JSON.parse(encryptResult).ciphertext);
+        /* decrypt the file */
+        console.log('Decrypting file...\n')
+        const decryptResult = ibe.decrypt(
+          ibeSetup.publicParameters, extractResult.privateKey,
+          JSON.parse(encryptResult).ciphertext);
+        console.log(decryptResult.plaintext)
         break
 
       /* TODO: list Peers */
