@@ -27,6 +27,7 @@ async function main() {
   /* create id based encryption (IBE) instance */
   const ibe = await cryptid.getInstance()
   const ibeSetupResult = ibe.setup(cryptid.SecurityLevel.LOWEST)
+  console.log(ibeSetupResult)
   console.log('ID based encryption system initialized...\n')
 
   let input = ''
@@ -36,6 +37,10 @@ async function main() {
 
     let fileName = ''
     let fileContents = ''
+    let peerSelection = ''
+    let peerId = ''
+    let encryptResult = {} 
+
     switch(input) {
       /* add unecrypted file */
       case '1':
@@ -49,9 +54,9 @@ async function main() {
         fileName = readlineSync.question('Enter file name: ')
         fileContents = readFile(fileName)
         showPeers(peers)
-        const peerSelection = readlineSync.question('Select a peer: ')
-        let peerId = getPeerId(peerSelection, peers)
-        const encryptResult = ibe.encrypt(
+        peerSelection = readlineSync.question('Select a peer: ')
+        peerId = getPeerId(peerSelection, peers)
+        encryptResult = ibe.encrypt(
           ibeSetupResult.publicParameters, peerId, fileContents)
         await addFileToIPFS(ipfsNode, fileName, 
           JSON.stringify(encryptResult))
@@ -59,6 +64,22 @@ async function main() {
 
       /* TODO: decrypt a file */
       case '3':
+        showPeers(peers)
+        peerSelection = readlineSync.question('Who are you? ')
+        peerId = getPeerId(peerSelection, peers)
+        console.log('Performing authenication...\n')
+        console.log('Requesting private key from PKG...\n')
+        const extractResult = ibe.extract(
+          ibeSetupResult.publicParameters, ibeSetupResult.masterSecret, peerId)
+        console.log('Private key retrieved.\n')
+
+        const cid = readlineSync.question('Enter the ipfs file CID: ')
+        encryptResult = await ipfsCat(ipfsNode, cid)
+
+        //console.log('Decrypting file...\n')
+        //const decryptResult = ibe.decrypt(
+        //  ibeSetupResult.publicParameters, extractResult.privateKey,
+        //  JSON.parse(encryptResult).ciphertext);
         break
 
       /* TODO: list Peers */
@@ -134,5 +155,5 @@ async function ipfsCat(ipfsNode, cid) {
       chunks.push(chunk)
   }
 
-  return chunks
+  return chunks.toString()
 }
