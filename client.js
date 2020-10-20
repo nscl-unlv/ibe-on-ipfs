@@ -10,6 +10,7 @@ const util = require('util')
 /* TEST Variables */
 const FILE_NAME = 'hello.txt'
 const PEER_ID = { name: 'test_peer_id' }
+const IBE_SETUP_FILE_NAME = 'ibe-setup-paramters.txt'
 const peers = [
   { name: 'Alice', id: '1234' },
   { name: 'Sally', id: '5678' }
@@ -25,10 +26,11 @@ async function main() {
   console.log('Version:', version.version, '\n')
 
   /* create id based encryption (IBE) instance */
+  console.log('Initializing ID Based Encryption system...\n')
   const ibe = await cryptid.getInstance()
   const ibeSetupResult = ibe.setup(cryptid.SecurityLevel.LOWEST)
-  console.log(ibeSetupResult)
-  console.log('ID based encryption system initialized...\n')
+  console.log(util.format('Saving ibe paramters to %s...', IBE_SETUP_FILE_NAME))
+  saveIbeParamters(IBE_SETUP_FILE_NAME, JSON.stringify(ibeSetupResult))
 
   let input = ''
   //while (input != 'q') {
@@ -39,6 +41,7 @@ async function main() {
     let fileContents = ''
     let peerSelection = ''
     let peerId = ''
+    let ibeSetup = {}
     let encryptResult = {} 
 
     switch(input) {
@@ -51,13 +54,23 @@ async function main() {
 
       /* add ecrypted file */
       case '2':
+        /* select file */
         fileName = readlineSync.question('Enter file name: ')
         fileContents = readFile(fileName)
+
+        /* select peer */
         showPeers(peers)
         peerSelection = readlineSync.question('Select a peer: ')
         peerId = getPeerId(peerSelection, peers)
+
+        /* load ibe paramters */
+        ibeSetup = JSON.parse(readFile(IBE_SETUP_FILE_NAME))
+
+        /* encrypt */
         encryptResult = ibe.encrypt(
-          ibeSetupResult.publicParameters, peerId, fileContents)
+          ibeSetup.publicParameters, peerId, fileContents)
+
+        /* upload to IPFS */
         await addFileToIPFS(ipfsNode, fileName, 
           JSON.stringify(encryptResult))
         break
@@ -100,11 +113,15 @@ async function main() {
   //  ibeSetupResult.publicParameters, extractResult.privateKey, encryptResult.ciphertext);
   //console.log(decryptResult.plaintext)
 
-  //console.log('program exiting...')
+  console.log('IPFS still running...')
   //process.exit(0)
 }
 
 /* --------------- Helper Functions ----------------------- */
+function saveIbeParamters(fileName, paramters) {
+  fs.writeFileSync(fileName, paramters)
+}
+
 function showMenu() {
   console.log('')
   console.log('1) Add a file to IPFS unecrypted.')
