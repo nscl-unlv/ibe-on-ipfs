@@ -35,96 +35,87 @@ async function main() {
   //saveIbeParamters(IBE_SETUP_FILE_NAME, JSON.stringify(ibeSetupResult))
 
   let input = ''
-  //while (input != 'q') {
-    showMenu()
-    input = readlineSync.question('Please select a menu item (q to quit): ')
+  let fileName = ''
+  let fileContents = ''
+  let peerSelection = ''
+  let peerId = ''
+  let ibeSetup = {}
+  let encryptResult = {} 
 
-    let fileName = ''
-    let fileContents = ''
-    let peerSelection = ''
-    let peerId = ''
-    let ibeSetup = {}
-    let encryptResult = {} 
+  showMenu()
+  input = readlineSync.question('Please select a menu item (q to quit): ')
 
-    switch(input) {
-      /* add unecrypted file */
-      case '1':
-        fileName = readlineSync.question('Enter file name: ')
-        fileContents = readFile(fileName)
-        await addFileToIPFS(ipfsNode, fileName, fileContents)
-        break
+  switch(input) {
+    /* add unecrypted file */
+    case '1':
+      fileName = readlineSync.question('Enter file name: ')
+      fileContents = readFile(fileName)
+      await addFileToIPFS(ipfsNode, fileName, fileContents)
+      break
 
-      /* add ecrypted file */
-      case '2':
-        /* select file */
-        fileName = readlineSync.question('Enter file name: ')
-        fileContents = readFile(fileName)
+    /* add ecrypted file */
+    case '2':
+      /* select file */
+      fileName = readlineSync.question('Enter file name: ')
+      fileContents = readFile(fileName)
 
-        /* select peer */
-        showPeers(peers)
-        peerSelection = readlineSync.question('Select a peer: ')
-        peerId = getPeerId(peerSelection, peers)
+      /* select peer */
+      showPeers(peers)
+      peerSelection = readlineSync.question('Select a peer: ')
+      peerId = getPeerId(peerSelection, peers)
 
-        /* load ibe paramters. TODO: move to PKG */
-        ibeSetup = JSON.parse(readFile(IBE_SETUP_FILE_NAME))
+      /* load ibe paramters. TODO: move to PKG */
+      ibeSetup = JSON.parse(readFile(IBE_SETUP_FILE_NAME))
 
-        /* encrypt */
-        encryptResult = ibe.encrypt(
-          ibeSetup.publicParameters, peerId, fileContents)
+      /* encrypt */
+      encryptResult = ibe.encrypt(
+        ibeSetup.publicParameters, peerId, fileContents)
 
-        /* upload to IPFS */
-        await addFileToIPFS(ipfsNode, fileName, 
-          JSON.stringify(encryptResult))
-        break
+      /* upload to IPFS */
+      await addFileToIPFS(ipfsNode, fileName, 
+        JSON.stringify(encryptResult))
+      break
 
-      /* decrypt a file */
-      case '3':
-        showPeers(peers)
-        peerSelection = readlineSync.question('Who are you? ')
-        peerId = getPeerId(peerSelection, peers)
+    /* decrypt a file */
+    case '3':
+      showPeers(peers)
+      peerSelection = readlineSync.question('Who are you? ')
+      peerId = getPeerId(peerSelection, peers)
 
 
-        console.log('Performing authenication...\n')
-        console.log('Requesting private key from PKG...\n')
+      console.log('Performing authenication...\n')
+      console.log('Requesting private key from PKG...\n')
 
-        /* load ibe paramters. TODO: move to PKG */
-        ibeSetup = JSON.parse(readFile(IBE_SETUP_FILE_NAME))
-        const extractResult = ibe.extract(
-          ibeSetup.publicParameters, ibeSetup.masterSecret, peerId)
-        console.log('Private key retrieved.\n')
+      /* load ibe paramters. TODO: move to PKG */
+      ibeSetup = JSON.parse(readFile(IBE_SETUP_FILE_NAME))
+      const extractResult = ibe.extract(
+        ibeSetup.publicParameters, ibeSetup.masterSecret, peerId)
+      console.log('Private key retrieved.\n')
 
-        /* get encrypted IPFS file */
-        const cid = readlineSync.question('Enter the ipfs file CID: ')
-        encryptResult = await ipfsCat(ipfsNode, cid)
+      /* get encrypted IPFS file */
+      const cid = readlineSync.question('Enter the ipfs file CID: ')
+      encryptResult = await ipfsCat(ipfsNode, cid)
 
-        /* decrypt the file */
-        console.log('Decrypting file...\n')
-        const decryptResult = ibe.decrypt(
-          ibeSetup.publicParameters, extractResult.privateKey,
-          JSON.parse(encryptResult).ciphertext);
-        console.log(decryptResult.plaintext)
-        break
+      /* decrypt the file */
+      console.log('Decrypting file...\n')
+      const decryptResult = ibe.decrypt(
+        ibeSetup.publicParameters, extractResult.privateKey,
+        JSON.parse(encryptResult).ciphertext);
+      console.log(decryptResult.plaintext)
+      break
 
-      /* TODO: list Peers */
-      case '4':
+    /* list Peers */
+    case '4':
+      showPeers(peers)
+      break
 
-      case 'q':
-        break
+    case 'q':
+      break
 
-      default:
-        console.log('\nInvalid input, select again.\n')
-    }
-  //} trouble with whle loop
-
-  //const extractResult = ibe.extract(
-  //  ibeSetupResult.publicParameters, ibeSetupResult.masterSecret, PEER_ID)
-
-  //const decryptResult = ibe.decrypt(
-  //  ibeSetupResult.publicParameters, extractResult.privateKey, encryptResult.ciphertext);
-  //console.log(decryptResult.plaintext)
-
-  console.log('IPFS still running...')
-  //process.exit(0)
+    default:
+      console.log('\nInvalid input, select again.\n')
+  }
+  console.log('IPFS still running, press ctrl-c to quit')
 }
 
 /* --------------- Helper Functions ----------------------- */
