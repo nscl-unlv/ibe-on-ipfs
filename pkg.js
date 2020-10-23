@@ -10,7 +10,7 @@ const util = require('util')
 /* TEST Variables */
 const FILE_NAME = 'hello.txt'
 const PEER_ID = { name: 'test_peer_id' }
-const IBE_SETUP_FILE_NAME = 'ibe-setup-paramters.txt'
+const IBE_SETUP_FILE_NAME = 'ibe-setup-parameters.txt'
 const peers = [
   { name: 'Alice', id: '1234' },
   { name: 'Sally', id: '5678' }
@@ -29,11 +29,41 @@ async function main() {
   const version = await ipfsNode.version()
   console.log('Version:', version.version, '\n')
 
-  const topic = 'fruit-of-the-day'
-  const receiveMsg = msg => console.log(msg.data.toString())
+  /* initialize ibe environment */
+  const ibe = await cryptid.getInstance()
+  const ibeSetup = JSON.parse(readFile(IBE_SETUP_FILE_NAME))
+  console.log('Initialized IBE paramters.')
 
-  await ipfsNode.pubsub.subscribe(topic, receiveMsg)
-  console.log(`subscribed to ${topic}`)
+  /* handle requests */
+  const handleRequests = msg => {
+    const request = msg.data.toString()
+    const jsonRequest = JSON.parse(request)
+    const { type, peerId, message } = jsonRequest
+    console.log(message)
+
+    const identity = { name: peerId }
+    console.log(identity)
+
+    if (type === 'public') {
+      console.log('generating public key')
+      const encryptResult = ibe.encrypt(
+        ibeSetup.publicParameters, identity, message)
+      //console.log(encryptResult)
+
+    } else if (type === 'private') {
+      console.log('get private key')
+
+    } else {
+      console.log('invalid message')
+    }
+  }
+
+  //const receiveMsg = msg => msg.data.toString()
+  const requestsTopic = 'pkg-key-requests'
+  await ipfsNode.pubsub.subscribe(requestsTopic, handleRequests)
+  console.log(`awaiting requests at ${requestsTopic}...`)
+  //console.log(`printing ${receiveMsg}`)
+  
 
   /* create id based encryption (IBE) instance */
   //console.log('Initializing ID Based Encryption system...\n')
@@ -129,6 +159,11 @@ async function main() {
 }
 
 /* --------------- Helper Functions ----------------------- */
+async function ipfsPublish(ipfsNode, topic, msg) {
+  const encodedMsg = new TextEncoder().encode()
+  await ipfsNode.pubsub.publish(topic, msg)
+}
+
 function saveIbeParamters(fileName, paramters) {
   fs.writeFileSync(fileName, paramters)
 }

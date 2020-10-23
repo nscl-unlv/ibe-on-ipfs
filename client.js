@@ -10,7 +10,7 @@ const util = require('util')
 /* TEST Variables */
 const FILE_NAME = 'hello.txt'
 const PEER_ID = { name: 'test_peer_id' }
-const IBE_SETUP_FILE_NAME = 'ibe-setup-paramters.txt'
+const IBE_SETUP_FILE_NAME = 'ibe-setup-parameters.txt'
 const peers = [
   { name: 'Alice', id: '1234' },
   { name: 'Sally', id: '5678' }
