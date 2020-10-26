@@ -56,7 +56,12 @@ async function main() {
         JSON.stringify(encryptResult))
 
     } else if (type === 'private') {
-      console.log('get private key')
+      /* extrate private key */
+      const extractResult = ibe.extract(
+        ibeSetup.publicParameters, ibeSetup.masterSecret, peerId)
+      console.log('Private key retrieved.\n')
+
+      /* send private key back to client*/
 
     } else {
       console.log('invalid message')
