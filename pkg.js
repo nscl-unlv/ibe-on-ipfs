@@ -35,7 +35,7 @@ async function main() {
   console.log('Initialized IBE paramters.')
 
   /* handle requests */
-  const handleRequests = msg => {
+  const handleRequests = async (msg) => {
     const request = msg.data.toString()
     const jsonRequest = JSON.parse(request)
     const { type, peerId, message } = jsonRequest
@@ -46,9 +46,14 @@ async function main() {
 
     if (type === 'public') {
       console.log('generating public key')
+      /* encrypts message */
       const encryptResult = ibe.encrypt(
         ibeSetup.publicParameters, identity, message)
-      //console.log(encryptResult)
+
+      /* upload to IPFS */
+      const fileName = 'test-file.txt'
+      await addFileToIPFS(ipfsNode, fileName, 
+        JSON.stringify(encryptResult))
 
     } else if (type === 'private') {
       console.log('get private key')
