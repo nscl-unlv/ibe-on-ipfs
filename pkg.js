@@ -39,10 +39,11 @@ async function main() {
     const request = msg.data.toString()
     const jsonRequest = JSON.parse(request)
     const { type, peerId, message } = jsonRequest
-    console.log(message)
 
+    /* TEST Output */
     const identity = { name: peerId }
     console.log(identity)
+    console.log(`message from client ${message}\n\n`)
 
     if (type === 'public') {
       console.log('generating public key')
@@ -62,6 +63,10 @@ async function main() {
       console.log('Private key retrieved.\n')
 
       /* send private key back to client*/
+      const testPrivKeyTopic = 'test-priv-key'
+      const testPrivKeyMsg = new TextEncoder().encode(JSON.stringify(extractResult))
+      await ipfsNode.pubsub.publish(testPrivKeyTopic, testPrivKeyMsg)
+      console.log(`Private key sent to ${peerId}.\n`)
 
     } else {
       console.log('invalid message')
