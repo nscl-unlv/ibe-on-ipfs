@@ -15,13 +15,18 @@ const peers = [
   { name: 'Alice', id: '1234' },
   { name: 'Sally', id: '5678' }
 ]
+const PKG_TOPIC = 'PKG-requests'
   
 
 main()
 
 async function main() {
   /* creates IPFS instance */
-  const ipfsNode = await ipfs.create()
+  const ipfsNode = await ipfs.create({
+    EXPERIMENTAL: {
+      pubsub: true
+    }
+  })
   const version = await ipfsNode.version()
   console.log('Version:', version.version, '\n')
 
@@ -36,11 +41,12 @@ async function main() {
 
   let input = ''
   let fileName = ''
-  let fileContents = ''
+  let fileContent = ''
   let peerSelection = ''
   let peerId = ''
   let ibeSetup = {}
   let encryptResult = {} 
+  let pkgMessage = {}
 
   showMenu()
   input = readlineSync.question('Please select a menu item (q to quit): ')
@@ -49,31 +55,25 @@ async function main() {
     /* add unecrypted file */
     case '1':
       fileName = readlineSync.question('Enter file name: ')
-      fileContents = readFile(fileName)
-      await addFileToIPFS(ipfsNode, fileName, fileContents)
+      fileContent = readFile(fileName)
+      await addFileToIPFS(ipfsNode, fileName, fileContent)
       break
 
     /* add ecrypted file */
     case '2':
       /* select file */
       fileName = readlineSync.question('Enter file name: ')
-      fileContents = readFile(fileName)
+      fileContent = readFile(fileName)
 
       /* select peer */
       showPeers(peers)
       peerSelection = readlineSync.question('Select a peer: ')
       peerId = getPeerId(peerSelection, peers)
 
-      /* load ibe paramters. TODO: move to PKG */
-      ibeSetup = JSON.parse(readFile(IBE_SETUP_FILE_NAME))
+      pkgMessage = createMessage('public', peerId, fileName, fileContent)
 
-      /* encrypt */
-      encryptResult = ibe.encrypt(
-        ibeSetup.publicParameters, peerId, fileContents)
-
-      /* upload to IPFS */
-      await addFileToIPFS(ipfsNode, fileName, 
-        JSON.stringify(encryptResult))
+      /* send to PKG for upload */
+      await ipfsNode.pubsub.publish(PKG_TOPIC, new TextEncoder().encode(pkgMessage))
       break
 
     /* decrypt a file */
@@ -119,6 +119,17 @@ async function main() {
 }
 
 /* --------------- Helper Functions ----------------------- */
+function createMessage(type, peerId, fileName, fileContent) {
+  const encodedContent = new TextEncoder().encode(fileContent)
+  const message = {
+    type,
+    peerId,
+    fileName,
+    fileContent
+  }
+  return JSON.stringify(message)
+}
+
 function saveIbeParamters(fileName, paramters) {
   fs.writeFileSync(fileName, paramters)
 }
