@@ -16,6 +16,7 @@ const peers = [
   { name: 'Sally', id: '5678' }
 ]
 const PKG_TOPIC = 'PKG-requests'
+const PKG_PEER_ADDR = '/ip4/192.168.1.17/tcp/4002/p2p/QmcvwjAAeEDd39MSS6w4HEdfxLB54FoDRdoUhbTNV8eeji'
   
 
 main()
@@ -33,6 +34,9 @@ async function main() {
   /* create id based encryption (IBE) instance */
   console.log('Initializing ID Based Encryption system...\n')
   const ibe = await cryptid.getInstance()
+
+  /* add PKG to connection */
+  await ipfsNode.swarm.connect(PKG_PEER_ADDR)
 
   /* uncomment to create new ibe paramters */
   //const ibeSetupResult = ibe.setup(cryptid.SecurityLevel.LOWEST)
@@ -82,26 +86,36 @@ async function main() {
       peerSelection = readlineSync.question('Who are you? ')
       peerId = getPeerId(peerSelection, peers)
 
-
+      /* TODO: authentication */
       console.log('Performing authenication...\n')
+
+      /* send request to PKG */
       console.log('Requesting private key from PKG...\n')
+      pkgMessage = createMessage('private', peerId)
+      const answer = await ipfsNode.pubsub.publish(PKG_TOPIC, new TextEncoder().encode(pkgMessage))
+
+      /* create topic to receive key */
+      //const testPrivKeyTopic = 'test-priv-key'
+      //const handleMsg = (msg) => console.log(msg.data.toString())
+      //await ipfsNode.pubsub.subscribe(testPrivKeyTopic, handleMsg)
+      //console.log('received private key')
 
       /* load ibe paramters. TODO: move to PKG */
-      ibeSetup = JSON.parse(readFile(IBE_SETUP_FILE_NAME))
-      const extractResult = ibe.extract(
-        ibeSetup.publicParameters, ibeSetup.masterSecret, peerId)
-      console.log('Private key retrieved.\n')
+      //ibeSetup = JSON.parse(readFile(IBE_SETUP_FILE_NAME))
+      //const extractResult = ibe.extract(
+      //  ibeSetup.publicParameters, ibeSetup.masterSecret, peerId)
+      //console.log('Private key retrieved.\n')
 
-      /* get encrypted IPFS file */
-      const cid = readlineSync.question('Enter the ipfs file CID: ')
-      encryptResult = await ipfsCat(ipfsNode, cid)
+      ///* get encrypted IPFS file */
+      //const cid = readlineSync.question('Enter the ipfs file CID: ')
+      //encryptResult = await ipfsCat(ipfsNode, cid)
 
-      /* decrypt the file */
-      console.log('Decrypting file...\n')
-      const decryptResult = ibe.decrypt(
-        ibeSetup.publicParameters, extractResult.privateKey,
-        JSON.parse(encryptResult).ciphertext);
-      console.log(decryptResult.plaintext)
+      ///* decrypt the file */
+      //console.log('Decrypting file...\n')
+      //const decryptResult = ibe.decrypt(
+      //  ibeSetup.publicParameters, extractResult.privateKey,
+      //  JSON.parse(encryptResult).ciphertext);
+      //console.log(decryptResult.plaintext)
       break
 
     /* list Peers */
@@ -119,8 +133,7 @@ async function main() {
 }
 
 /* --------------- Helper Functions ----------------------- */
-function createMessage(type, peerId, fileName, fileContent) {
-  const encodedContent = new TextEncoder().encode(fileContent)
+function createMessage(type, peerId, fileName='', fileContent='') {
   const message = {
     type,
     peerId,
