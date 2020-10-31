@@ -55,9 +55,13 @@ async function main() {
 
       /* send private key back to client*/
       console.log(`Sending private key to ${peerId}...\n`)
-      const testPrivKeyTopic = 'test-priv-key' /* TEST */
-      const testPrivKeyMsg = new TextEncoder().encode(JSON.stringify(extractResult))
-      await ipfsNode.pubsub.publish(testPrivKeyTopic, testPrivKeyMsg)
+      const testPrivKeyTopic = 'test-priv-key'
+      const privateKey = new TextEncoder().encode(JSON.stringify(extractResult))
+
+      /* give client time to subscribe to topic */
+      setTimeout(async () => {
+        await ipfsNode.pubsub.publish(testPrivKeyTopic, privateKey)
+      }, 5000)
 
     } else {
       console.log('invalid message')
@@ -66,15 +70,11 @@ async function main() {
 
   /* subscribe to topic for receiveing requests from clients */
   await ipfsNode.pubsub.subscribe(PKG_TOPIC, handleRequests)
-  console.log(`Awaiting requests at topic: ${PKG_TOPIC}`)
+  console.log(`Awaiting requests at topic: ${PKG_TOPIC}\n\n`)
+
 }
 
 /* --------------- Helper Functions ----------------------- */
-async function ipfsPublish(ipfsNode, topic, msg) {
-  const encodedMsg = new TextEncoder().encode()
-  await ipfsNode.pubsub.publish(topic, msg)
-}
-
 function saveIbeParamters(fileName, paramters) {
   fs.writeFileSync(fileName, paramters)
 }
