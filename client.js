@@ -37,12 +37,7 @@ async function main() {
   const ibeSetup = JSON.parse(readFile(IBE_SETUP_FILE_NAME))
 
   /* add PKG to connection */
-  await ipfsNode.swarm.connect(PKG_PEER_ADDR)
-
-  /* uncomment to create new ibe paramters */
-  //const ibeSetupResult = ibe.setup(cryptid.SecurityLevel.LOWEST)
-  //console.log(util.format('Saving ibe paramters to %s...', IBE_SETUP_FILE_NAME))
-  //saveIbeParamters(IBE_SETUP_FILE_NAME, JSON.stringify(ibeSetupResult))
+  //await ipfsNode.swarm.connect(PKG_PEER_ADDR)
 
   let input = ''
   let fileName = ''
@@ -74,10 +69,13 @@ async function main() {
       peerSelection = readlineSync.question('Select a peer: ')
       peerId = getPeerId(peerSelection, peers)
 
-      pkgMessage = createMessage('public', peerId, fileName, fileContent)
+      /* encrypt */
+      const encryptResult = ibe.encrypt(
+        ibeSetup.publicParameters, peerId, fileContent)
 
-      /* send to PKG for upload */
-      await ipfsNode.pubsub.publish(PKG_TOPIC, new TextEncoder().encode(pkgMessage))
+      /* upload to IPFS */
+      await addFileToIPFS(ipfsNode, fileName,
+        JSON.stringify(encryptResult))
       break
 
     /* decrypt a file */
