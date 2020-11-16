@@ -37,6 +37,7 @@ async function main() {
     /* encrypt message using public key */
     if (type === 'private') {
       /* TODO authenticate client */
+      console.log(`Authenticating Peer...\n\n`)
 
       /* extrate private key */
       console.log(`Extracting private key for Peer Id: ${peerId}...\n`)
