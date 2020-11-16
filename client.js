@@ -12,11 +12,10 @@ const FILE_NAME = 'hello.txt'
 const PEER_ID = { name: 'test_peer_id' }
 const IBE_SETUP_FILE_NAME = 'ibe-setup-parameters.txt'
 const peers = [
-  { name: 'Alice', id: '1234' },
-  { name: 'Sally', id: '5678' }
+  { name: 'Alice', id: 'QmST4iWcHnU2TeB9Z2gmLQWCEk6A375znqcVFhDqNHMaGb' },
+  { name: 'Bob', id: '5678' }
 ]
 const PKG_TOPIC = 'PKG-requests'
-const PKG_PEER_ADDR = '/ip4/192.168.1.17/tcp/4002/p2p/QmcvwjAAeEDd39MSS6w4HEdfxLB54FoDRdoUhbTNV8eeji'
   
 
 main()
@@ -28,16 +27,13 @@ async function main() {
       pubsub: true
     }
   })
-  const version = await ipfsNode.version()
-  console.log('Version:', version.version, '\n')
+  const nodePeerId = await ipfsNode.id()
+  console.log(`\nPeer Id: ${nodePeerId.id}`)
 
   /* create id based encryption (IBE) instance */
   console.log('Initializing ID Based Encryption system...\n')
   const ibe = await cryptid.getInstance()
   const ibeSetup = JSON.parse(readFile(IBE_SETUP_FILE_NAME))
-
-  /* add PKG to connection */
-  //await ipfsNode.swarm.connect(PKG_PEER_ADDR)
 
   let input = ''
   let fileName = ''
