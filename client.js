@@ -12,8 +12,8 @@ const FILE_NAME = 'hello.txt'
 const PEER_ID = { name: 'test_peer_id' }
 const IBE_SETUP_FILE_NAME = 'ibe-setup-parameters.txt'
 const peers = [
-  { name: 'Alice', id: 'QmST4iWcHnU2TeB9Z2gmLQWCEk6A375znqcVFhDqNHMaGb' },
-  { name: 'Bob', id: 'QmWrvrFVdPpbFyiQ1qrHtfR6wHJMtmdZDLEKZi8wqUsf9g' }
+  { name: 'Bob', id: 'QmST4iWcHnU2TeB9Z2gmLQWCEk6A375znqcVFhDqNHMaGb' },
+  { name: 'Alice', id: 'QmWrvrFVdPpbFyiQ1qrHtfR6wHJMtmdZDLEKZi8wqUsf9g' }
 ]
 const PKG_TOPIC = 'PKG-requests'
   
