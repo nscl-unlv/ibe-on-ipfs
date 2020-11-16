@@ -97,15 +97,15 @@ async function main() {
       response = await ipfsNode.pubsub.publish(PKG_TOPIC, new TextEncoder().encode(pkgMessage))
 
       /* create topic to receive key */
-      const testPrivKeyTopic = 'test-priv-key'
+      const topic = peerId 
       const decryptHandler = (msg) => {
         const privateKeyMsg = JSON.parse(msg.data.toString())
-        console.log(privateKeyMsg)
         const decryptResult = ibe.decrypt(ibeSetup.publicParameters, 
           privateKeyMsg.privateKey, encryptedFileJson.ciphertext);
+        console.log('Decryption successful!\n')
         console.log(decryptResult.plaintext)
       }
-      response = await ipfsNode.pubsub.subscribe(testPrivKeyTopic, decryptHandler)
+      response = await ipfsNode.pubsub.subscribe(topic, decryptHandler)
       break
 
     /* list Peers */
