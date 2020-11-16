@@ -68,10 +68,12 @@ async function main() {
       showPeers(peers)
       peerSelection = readlineSync.question('Select a peer: ')
       peerId = getPeerId(peerSelection, peers)
+      const identity = { name: peerId }
+
 
       /* encrypt */
       const encryptResult = ibe.encrypt(
-        ibeSetup.publicParameters, peerId, fileContent)
+        ibeSetup.publicParameters, identity, fileContent)
 
       /* upload to IPFS */
       await addFileToIPFS(ipfsNode, fileName,
@@ -83,9 +85,6 @@ async function main() {
       showPeers(peers)
       peerSelection = readlineSync.question('Who are you? ')
       peerId = getPeerId(peerSelection, peers)
-
-      /* TODO: authentication */
-      console.log('Performing authenication...\n')
 
       /* retrieve encrypted file */
       const cid = readlineSync.question('Enter the ipfs file CID: ')
