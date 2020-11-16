@@ -18,8 +18,8 @@ async function main() {
       pubsub: true
     }
   })
-  const version = await ipfsNode.version()
-  console.log('Version:', version.version, '\n')
+  const nodePeerId = await ipfsNode.id()
+  console.log('\nPeer Id:', nodePeerId.id, '\n')
 
   /* initialize ibe environment */
   const ibe = await cryptid.getInstance()
@@ -60,7 +60,7 @@ async function main() {
 
   /* subscribe to topic for receiveing requests from clients */
   await ipfsNode.pubsub.subscribe(PKG_TOPIC, handleRequests)
-  console.log(`Awaiting requests at topic: ${PKG_TOPIC}\n\n`)
+  console.log(`Awaiting requests at topic: \"${PKG_TOPIC}\"\n\n`)
 }
 
 /* --------------- Helper Functions ----------------------- */
