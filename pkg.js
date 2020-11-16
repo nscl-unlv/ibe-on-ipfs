@@ -32,35 +32,25 @@ async function main() {
     const request = JSON.parse(message)
     const { type, peerId } = request
     const identity = { name: peerId }
-    console.log(`Received message from client ${peerId}\n\n`)
+    console.log(`Received message from Peer Id: ${peerId}\n\n`)
 
     /* encrypt message using public key */
-    if (type === 'public') {
-      /* encrypts message */
-      console.log('generating public key and encrypting file...\n')
-      const { fileName, fileContent } = request
-      const encryptResult = ibe.encrypt(
-        ibeSetup.publicParameters, identity, fileContent)
+    if (type === 'private') {
+      /* TODO authenticate client */
 
-      /* upload to IPFS */
-      await addFileToIPFS(ipfsNode, fileName, 
-        JSON.stringify(encryptResult))
-
-    /* extract the private key from the peer ID */
-    } else if (type === 'private') {
       /* extrate private key */
-      console.log(`Extracting private key for ${peerId}...\n`)
+      console.log(`Extracting private key for Peer Id: ${peerId}...\n`)
       const extractResult = ibe.extract(
         ibeSetup.publicParameters, ibeSetup.masterSecret, identity)
 
       /* send private key back to client*/
-      console.log(`Sending private key to ${peerId}...\n`)
-      const testPrivKeyTopic = 'test-priv-key'
+      console.log(`Sending private key to Peer Id: ${peerId}...\n`)
+      const privateKeyTopic = peerId
       const privateKey = new TextEncoder().encode(JSON.stringify(extractResult))
 
       /* give client time to subscribe to topic */
       setTimeout(async () => {
-        await ipfsNode.pubsub.publish(testPrivKeyTopic, privateKey)
+        await ipfsNode.pubsub.publish(privateKeyTopic, privateKey)
       }, 5000)
 
     } else {
@@ -71,7 +61,6 @@ async function main() {
   /* subscribe to topic for receiveing requests from clients */
   await ipfsNode.pubsub.subscribe(PKG_TOPIC, handleRequests)
   console.log(`Awaiting requests at topic: ${PKG_TOPIC}\n\n`)
-
 }
 
 /* --------------- Helper Functions ----------------------- */
