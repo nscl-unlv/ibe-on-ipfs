@@ -4,13 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "parcel index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@cryptid/cryptid-js": "^1.0.1",
-    "ipfs": "^0.50.2",
+    "ipfs": "^0.53.0",
     "readline-sync": "^1.4.10"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4"
   }
 }
