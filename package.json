@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "parcel index.html",
+    "serve": "http-server",
+    "watch": "watchify ./src/index.js -o ./public/bundle.js",
+    "build": "browserify ./src/index.js -o ./public/bundle.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -15,6 +17,8 @@
     "readline-sync": "^1.4.10"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.12.4"
+    "browserify": "^17.0.0",
+    "http-server": "^0.12.3",
+    "watchify": "^3.11.1"
   }
 }

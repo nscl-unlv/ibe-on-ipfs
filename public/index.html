@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>IBE on IPFS</title>
+</head>
+
+<body>
+  <h1>IBE on IPFS</h1>
+  <h2>Sender</h2>
+  <form name="s-form">
+    <label for="s-pid">Sender Peer ID</label>
+    <input type="text" id="s-pid" name="s-pid" /><br><br>
+
+    <label for="s-to-pid">Receiver Peer ID</label>
+    <input type="text" id="s-to-pid" name="s-to-pid" /><br><br>
+
+    <label for="s-file">Select .txt file to Share:</label>
+    <input type="file" id="s-file" name="s-file" accept=".txt" /><br><br>
+
+    <input type="checkbox" id="encrypt" name="encrypt">
+    <label for="encrypt">encrypt</label><br><br>
+
+    <input type="submit" value="Send" />
+  </form>
+
+  <h2>Receiver</h2>
+  <form name="r-form">
+    <label for="enc-cid">*Encrypted File CID</label>
+    <input type="text" id="enc-cid" name="enc-cid" /><br><br>
+
+    <label for="r-pid">**Receiver Peer ID</label>
+    <input type="text" id="r-pid" name="r-pid" /><br><br>
+
+    <label for="dl-cid">**File CID</label>
+    <input type="text" id="f-cid" name="f-cid" /><br><br>
+
+    <input type="submit" name="dl-file" value="*Download File" />
+    <input type="submit" name="req-priv-key" value="**Request Private Key" /><br><br>
+
+    <label for="decrypt-file">Select .txt file to decrypt:</label>
+    <input type="file" id="decrypt-file" name="decrypt-file" accept=".txt" /><br>
+    <input type="submit" name="decrypt-file" value="Decrypt File" />
+  </form>
+
+   <script src="bundle.js"></script>
+</body>
+</html>
