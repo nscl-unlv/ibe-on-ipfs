@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "serve": "http-server",
-    "watch": "watchify ./src/index.js -o ./public/bundle.js",
     "build": "browserify ./src/index.js -o ./public/bundle.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "rimraf public/bundle.js",
+    "serve": "http-server public",
+    "watch": "watchify ./src/index.js -o ./public/bundle.js"
   },
   "author": "",
   "license": "ISC",
@@ -19,6 +19,7 @@
   "devDependencies": {
     "browserify": "^17.0.0",
     "http-server": "^0.12.3",
+    "rimraf": "^3.0.2",
     "watchify": "^3.11.1"
   }
 }
