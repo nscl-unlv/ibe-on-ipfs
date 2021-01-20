@@ -21,23 +21,23 @@ async function clientMain() {
     tempNode = node;
 
     const pid = await node.id();
-    console.log(`Peer ID: ${pid.id}`);
+    document.getElementById('s-pid').innerText = pid.id;
 
     // start IBE
     console.log('Initializing ID Based Encryption system...\n');
-    const ibe = await cryptid.getInstance();
+    const ibe = await cryptid.default.getInstance();
 
     // get file contents
     let inputFile = document.getElementById('s-file');
     let fileName = ''
-    let fileContents = '';
+    let fileContent = '';
     inputFile.addEventListener('change', () => {
       fileName = inputFile.files[0].name;
 
       let fr = new FileReader();
       fr.readAsText(inputFile.files[0]);
       fr.onload = () => {
-        fileContents = fr.result;
+        fileContent = fr.result;
       };
     });
 
@@ -45,19 +45,29 @@ async function clientMain() {
     const senderForm = document.forms['s-form'];
     senderForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const senderPid = senderForm.elements['s-pid'].value;
+      if (fileContent === '') {
+        console.log('no file or empty file');
+        return;
+      }
+
+      let cid = ''; 
       const sendToPid = senderForm.elements['s-to-pid'].value;
       const encryptChecked = senderForm.elements['encrypt'].checked;
 
-      // TODO: encryption checkbox
+      if (encryptChecked) {
+        const identity = { name: pid };
+        const encryptResult = await ibe.encrypt(
+          ibeSetup.publicParameters, identity, fileContent)
+        cid = await addFileIpfs(node, fileName, JSON.stringify(encryptResult));
+      } else {
+        cid = await addFileIpfs(node, fileName, fileContent);
+      }
 
-      // TODO: add encryption function
-
-      //const cid = await addFileIpfs(node, fileName, fileContents);
+      document.getElementById('cid').innerText = cid;
     });
 
   }); // end addEventListener
-}
+} // end clientMain
 
 
 /* ------------ Helper Functions -------------- */

@@ -7,11 +7,9 @@
 <body>
   <h1>IBE on IPFS</h1>
   <h2>Sender</h2>
+  <p>Sender Peer ID: <span id="s-pid"></span></p>
   <form name="s-form">
-    <label for="s-pid">Sender Peer ID</label>
-    <input type="text" id="s-pid" name="s-pid" /><br><br>
-
-    <label for="s-to-pid">Receiver Peer ID</label>
+    <label for="s-to-pid">Receiver Peer ID:</label>
     <input type="text" id="s-to-pid" name="s-to-pid" /><br><br>
 
     <label for="s-file">Select .txt file to Share:</label>
@@ -22,6 +20,7 @@
 
     <input type="submit" value="Share File" />
   </form>
+  <p>CID: <span id="cid"></span></p>
 
   <h2>Receiver</h2>
   <form name="r-form">
