@@ -4,13 +4,22 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "browserify ./src/index.js -o ./public/bundle.js",
+    "clean": "rimraf public/bundle.js",
+    "serve": "http-server public",
+    "watch": "watchify ./src/index.js -o ./public/bundle.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@cryptid/cryptid-js": "^1.0.1",
-    "ipfs": "^0.50.2",
+    "ipfs": "^0.53.0",
     "readline-sync": "^1.4.10"
+  },
+  "devDependencies": {
+    "browserify": "^17.0.0",
+    "http-server": "^0.12.3",
+    "rimraf": "^3.0.2",
+    "watchify": "^3.11.1"
   }
 }
