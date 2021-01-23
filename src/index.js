@@ -1,4 +1,6 @@
 const { senderMain } = require('./sender');
+const { receiverMain } = require('./receiver');
+
 
 let ipfsInstanceExists = false;
 
@@ -18,7 +20,7 @@ document
   .addEventListener('click', async () => {
     if (!ipfsInstanceExists) {
       ipfsInstanceExists = true;
-      console.log('start receiver node');
+      await receiverMain();
     } else {
       console.log('IPFS instance already running!');
     }

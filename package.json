@@ -6,7 +6,7 @@
   "scripts": {
     "build": "browserify ./src/index.js -o ./public/bundle.js",
     "clean": "rimraf public/bundle.js",
-    "serve": "http-server public",
+    "serve": "http-server public -p 8090",
     "watch": "watchify ./src/index.js -o ./public/bundle.js"
   },
   "author": "",

@@ -13,7 +13,6 @@ async function senderMain() {
     EXPERIMENTAL: { pubsub: true }
   });
   console.log('IPFS node is ready');
-  tempNode = node;
 
   const nodeId = await node.id();
   const pid = nodeId.id;
@@ -24,7 +23,8 @@ async function senderMain() {
   const ibe = await cryptid.default.getInstance();
 
   // get file contents
-  let inputFile = document.getElementById('s-file');
+  const senderForm = document.forms['s-form'];
+  let inputFile = senderForm.elements['s-file'];
   let fileInfo = { };
   inputFile.addEventListener('change', () => {
     fileInfo.name = inputFile.files[0].name;
@@ -36,8 +36,17 @@ async function senderMain() {
     };
   });
 
+  // TODO: connect to peer
+  let receiverPid = ''
+  document
+    .getElementById('connect-btn')
+    .addEventListener('click', async () => {
+      receiverPid = senderForm.elements['s-to-pid'].value;
+      //await node.swarm.connect(fullAddr);
+    });
+
+
   // share file on ipfs
-  const senderForm = document.forms['s-form'];
   senderForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!fileInfo.hasOwnProperty('content')) {
@@ -59,6 +68,9 @@ async function senderMain() {
 
     const cid = await addFileIpfs(node, fileInfo);
     document.getElementById('cid').innerText = cid;
+    
+    // TODO: send shared CID to reciever
+    await node.pubsub.publish('test-topic', new TextEncoder().encode(cid));
 
     if (encryptChecked) {
       document.getElementById('hash').innerText = fileInfo.hash;
@@ -69,6 +81,7 @@ async function senderMain() {
 
 
 /* ------------ Helper Functions -------------- */
+
 async function encryptFile(ibe, pid, file) {
   const ibePubKey = pid.concat(file.hash);
   const identity = { name: ibePubKey };
