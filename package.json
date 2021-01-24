@@ -6,14 +6,16 @@
   "scripts": {
     "build": "browserify ./src/index.js -o ./public/bundle.js",
     "clean": "rimraf public/bundle.js",
+    "ipfs": "jsipfs daemon",
     "serve": "http-server public -p 8090",
+    "start": "npm run ipfs & npm run serve",
     "watch": "watchify ./src/index.js -o ./public/bundle.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@cryptid/cryptid-js": "^1.0.1",
-    "ipfs": "^0.53.0",
+    "ipfs": "^0.53.2",
     "ipfs-http-client": "^48.2.2",
     "readline-sync": "^1.4.10"
   },
