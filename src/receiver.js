@@ -11,6 +11,13 @@ async function receiverMain() {
     repo: String(Math.random() + Date.now()),
     init: { alogorithm: 'ed25519' },
     EXPERIMENTAL: { pubsub: true },
+    //Addresses: {
+    //  Swarm: [
+    //    "/ip4/0.0.0.0/tcp/4001"
+    //  ],
+    //  API: "/ip4/127.0.0.1/tcp/5001",
+    //  Gateway: "/ip4/127.0.0.1/tcp/8080"
+    //}
   });
   console.log('IPFS node is ready');
 
