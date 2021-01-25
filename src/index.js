@@ -7,6 +7,10 @@ let ipfsInstanceExists = false;
 document
   .getElementById('sender-btn')
   .addEventListener('click', async () => {
+    document
+      .getElementById('sender-app')
+      .removeAttribute('hidden');
+
     if (!ipfsInstanceExists) {
       ipfsInstanceExists = true;
       await senderMain();
@@ -18,6 +22,10 @@ document
 document
   .getElementById('receiver-btn')
   .addEventListener('click', async () => {
+    document
+      .getElementById('receiver-app')
+      .removeAttribute('hidden');
+
     if (!ipfsInstanceExists) {
       ipfsInstanceExists = true;
       await receiverMain();

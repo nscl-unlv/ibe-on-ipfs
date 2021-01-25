@@ -2,67 +2,73 @@
 <html lang="en">
 <head>
   <title>IBE on IPFS</title>
-</head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-<style>
-a.button {
-  -webkit-appearance: button;
-  -moz-appearance: button;
-  appearance: button;
-}
-</style>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
 
 
 <body>
-  <h1>ID Based Encryption on IPFS</h1>
+  <div class="container">
 
-  <button id="sender-btn" type="button">I am the sender</button>
-  <button id="receiver-btn" type="button">I am the receiver</button>
-
-  <h2>Sender</h2>
-  <p>Sender Peer ID: <span id="s-pid"></span></p>
-  <form name="s-form">
-    <label for="s-to-pid">Receiver Peer ID:</label>
-    <input type="text" id="s-to-pid" name="s-to-pid" />
-    <button id="connect-btn" type="button">Connect</button>
+    <h1>ID Based Encryption on IPFS</h1>
+    <button id="sender-btn" type="button">I am the sender</button>
+    <button id="receiver-btn" type="button">I am the receiver</button>
     <br><br>
 
-    <label for="s-file">Select .txt file to Share:</label>
-    <input type="file" id="s-file" name="s-file" accept=".txt" /><br><br>
+    <div id="sender-app" hidden>
+      <h2>Sender</h2>
+      <p>Sender Peer ID: <span id="s-pid"></span></p>
+      <form name="s-form">
+        <label for="s-to-pid">Receiver Peer ID:</label>
+        <input type="text" id="s-to-pid" name="s-to-pid" />
+        <button id="connect-btn" type="button">Connect</button>
+        <br><br>
 
-    <input type="checkbox" id="encrypt" name="encrypt">
-    <label for="encrypt">encrypt</label><br><br>
+        <label for="s-file">Select .txt file to Share:</label>
+        <input type="file" id="s-file" name="s-file" accept=".txt" /><br><br>
 
-    <input type="submit" value="Share File" />
-  </form>
-  <p>
-    Shared CID: <span id="cid"></span><br>
-    File Hash*: <span id="hash"></span><br><br>
-    <i>*CID of the original file if encrypted; however not shared in IPFS</i>
-  </p>
-  <button id="pubsub-btn" type="button">Test Pubsub</button>
+        <input type="checkbox" id="encrypt" name="encrypt">
+        <label for="encrypt">encrypt</label><br><br>
 
-  <h2>Receiver</h2>
-  <p>Receiver Peer ID: <span id="r-pid"></span></p>
-  <form name="r-form">
-    <label for="enc-cid">Encrypted File CID</label>
-    <input type="text" id="enc-cid" name="enc-cid" />
-    <button name="get-file" id="get-file">Get File</button>
-    <br><br>
+        <input type="submit" value="Share File" />
+      </form>
+      <p>
+        Shared CID: <span id="cid"></span><br>
+        File Hash*: <span id="hash"></span><br><br>
+        <i>*CID of the original file if encrypted; however not shared in IPFS</i>
+      </p>
+      <button id="pubsub-btn" type="button">Test Pubsub</button>
+    </div>
 
-    <label for="dl-cid">File Hash</label>
-    <input type="text" id="f-cid" name="f-cid" /><br><br>
+    <div id="receiver-app" hidden>
+      <h2>Receiver</h2>
+      <p>Receiver Peer ID: <span id="r-pid"></span></p>
+      <form name="r-form">
+        <label for="enc-cid">Encrypted File CID</label>
+        <input type="text" id="enc-cid" name="enc-cid" />
+        <button name="get-file" id="get-file">Get File</button>
+        <br><br>
 
-    <a id="dl-link" download="encrypted_file.txt" href="">
-      Download File
-    </a>
-    <input type="submit" name="req-priv-key" value="Request Private Key" /><br><br>
+        <label for="dl-cid">File Hash</label>
+        <input type="text" id="f-cid" name="f-cid" /><br><br>
 
-    <label for="decrypt-file">Select .txt file to decrypt:</label>
-    <input type="file" id="decrypt-file" name="decrypt-file" accept=".txt" /><br>
-    <input type="submit" name="decrypt-file" value="Decrypt File" />
-  </form>
+        <a id="dl-link" download="encrypted_file.txt" href="">
+          Download File
+        </a>
+        <input type="submit" name="req-priv-key" value="Request Private Key" /><br><br>
 
+        <label for="decrypt-file">Select .txt file to decrypt:</label>
+        <input type="file" id="decrypt-file" name="decrypt-file" accept=".txt" /><br>
+        <input type="submit" name="decrypt-file" value="Decrypt File" />
+      </form>
+      </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
    <script src="bundle.js"></script>
 </body>
 </html>
