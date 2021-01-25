@@ -4,6 +4,14 @@
   <title>IBE on IPFS</title>
 </head>
 
+<style>
+a.button {
+  -webkit-appearance: button;
+  -moz-appearance: button;
+  appearance: button;
+}
+</style>
+
 
 <body>
   <h1>ID Based Encryption on IPFS</h1>
@@ -37,13 +45,17 @@
   <h2>Receiver</h2>
   <p>Receiver Peer ID: <span id="r-pid"></span></p>
   <form name="r-form">
-    <label for="enc-cid">*Encrypted File CID</label>
-    <input type="text" id="enc-cid" name="enc-cid" /><br><br>
+    <label for="enc-cid">Encrypted File CID</label>
+    <input type="text" id="enc-cid" name="enc-cid" />
+    <button name="get-file" id="get-file">Get File</button>
+    <br><br>
 
-    <label for="dl-cid">**File CID</label>
+    <label for="dl-cid">File Hash</label>
     <input type="text" id="f-cid" name="f-cid" /><br><br>
 
-    <input type="submit" name="dl-file" value="*Download File" />
+    <a id="dl-link" download="encrypted_file.txt" href="">
+      Download File
+    </a>
     <input type="submit" name="req-priv-key" value="Request Private Key" /><br><br>
 
     <label for="decrypt-file">Select .txt file to decrypt:</label>

@@ -29,6 +29,18 @@ async function receiverMain() {
   console.log('Initializing ID Based Encryption system...\n');
   const ibe = await cryptid.default.getInstance();
 
+
+  // get file from IPFS
+  const receiverForm = document.forms['r-form'];
+  const cidInput = receiverForm.elements['enc-cid'];
+  const getFileBtn = receiverForm.elements['get-file'];
+
+  getFileBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const cid = cidInput.value;
+    await catFile(ipfsClient, cid);
+  });
+
   // TODO: handle GossipSub messages
   const topic = 'my-topic';
   const handleMsg = msg => {
@@ -36,18 +48,38 @@ async function receiverMain() {
   };
   await ipfsClient.pubsub.subscribe(topic, handleMsg);
   console.log(`Subscribed to topic: ${topic}`);
-
 } // end clientMain
 
 
 /* ------------ Helper Functions -------------- */
-async function getCid(node, file) {
-  const fileBlocks = await node.add({
-    path: file.name,
-    content: file.content
-  }, {onlyHash: true});
+async function getFile(ipfs, cid) {
+  for await (const file of ipfs.get(cid)) {
+    console.log(file.type, file.path)
 
-  return fileBlocks.cid;
+    if (!file.content) continue;
+
+    const content = []
+
+    for await (const chunk of file.content) {
+      content.push(chunk)
+    }
+
+    console.log(content.toString())
+  }
+}
+
+async function catFile(ipfs, cid) {
+  for await (const chunk of ipfs.cat(cid)) {
+    const text = new TextDecoder('utf-8').decode(chunk);
+    console.log(text);
+    createFileUrl(text)
+  }
+}
+
+function createFileUrl(text) {
+  let data = new Blob([text], {type: 'text/plain'});
+  const url = window.URL.createObjectURL(data);
+  document.getElementById('dl-link').href = url;
 }
 
 module.exports = {
