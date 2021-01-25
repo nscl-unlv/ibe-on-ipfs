@@ -46,23 +46,23 @@
       <h2>Receiver</h2>
       <p>Receiver Peer ID: <span id="r-pid"></span></p>
       <form name="r-form">
-        <label for="enc-cid">Encrypted File CID</label>
+        <label for="enc-cid">1.) Encrypted File CID</label>
         <input type="text" id="enc-cid" name="enc-cid" />
         <button name="get-file" id="get-file">Get File</button>
         <br><br>
 
-        <label for="hash">File Hash</label>
-        <input type="text" id="hash" name="hash" /><br><br>
+        <label for="hash">2.) File Hash</label>
+        <input type="text" id="hash" name="hash" />
         <button name="req-priv-key" id="req-priv-key">Request Private Key</button>
+        <br><br>
 
-        <a id="dl-link" download="encrypted_file.txt" href="">
+        3.) <button name="decrypt-file" id="decrypt-file">Decrypt File</button> 
+        <br><br>
+
+        4.) <a id="dl-link" download="encrypted_file.txt" class="btn btn-primary" role="button" href="">
           Download File
         </a>
         <br><br>
-
-        <label for="decrypt-file">Select .txt file to decrypt:</label>
-        <input type="file" id="decrypt-file" name="decrypt-file" accept=".txt" /><br>
-        <input type="submit" name="decrypt-file" value="Decrypt File" />
       </form>
       </div>
   </div>
