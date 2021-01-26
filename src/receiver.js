@@ -1,8 +1,6 @@
 
 const createClient = require('ipfs-http-client');
 const cryptid = require('@cryptid/cryptid-js');
-//const IPFS = require('ipfs');
-//const util = require('util');
 
 // Client Ipfs
 const clientApi = '5002' // 5001 for go-ipfs
@@ -12,11 +10,6 @@ const ibeSetup = {"masterSecret":"1270688028488889238800830133097891363377421790
 
 async function receiverMain() {
   // start IPFS
-  //const node = await IPFS.create({
-  //  repo: String(Math.random() + Date.now()),
-  //  init: { alogorithm: 'ed25519' },
-  //  Pubsub: { enabled: true }
-  //});
   const ipfsClient = createClient(`/ip4/127.0.0.1/tcp/${clientApi}`); 
   console.log('IPFS node is ready');
 
@@ -30,14 +23,15 @@ async function receiverMain() {
   const ibe = await cryptid.default.getInstance();
 
 
-  // get file from IPFS
   const receiverForm = document.forms['r-form'];
   const cidInput = receiverForm.elements['enc-cid'];
   const hashInput = receiverForm.elements['hash'];
   const getFileBtn = receiverForm.elements['get-file'];
+  const decryptBtn = receiverForm.elements['decrypt-file'];
   const reqPrivKeyBtn = receiverForm.elements['req-priv-key'];
 
   // generate private key
+  let privateKey = {}
   reqPrivKeyBtn.addEventListener('click', async (e) => {
     e.preventDefault();
 
@@ -47,13 +41,36 @@ async function receiverMain() {
     const extractResult = await ibe.extract(ibeSetup.publicParameters,
                                             ibeSetup.masterSecret,
                                             identity);
-    console.log(extractResult);
-  })
+    //console.log(extractResult);
+    privateKey = extractResult.privateKey;
+    if (extractResult.success) {
+      console.log('retrieved private key');
+    } else {
+      console.log('failed to retrieve private key');
+    }
+  });
 
+  // get file from IPFS
+  let ibeFileObj = {}; 
   getFileBtn.addEventListener('click', async (e) => {
     e.preventDefault();
     const cid = cidInput.value;
-    await catFile(ipfsClient, cid);
+    const fileContents = await catFile(ipfsClient, cid);
+    ibeFileObj = JSON.parse(fileContents);
+    if (ibeFileObj.success) {
+      console.log('got encrypted file');
+    } else {
+      console.log('failed to get encrypted file');
+    }
+  });
+
+  // decrypt file
+  let decryptedText = ''
+  decryptBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    decryptedText = await decryptFile(ibe, privateKey, ibeFileObj.ciphertext);
+    
+    console.log(decryptedText);
   });
 
   // TODO: handle GossipSub messages
@@ -67,27 +84,26 @@ async function receiverMain() {
 
 
 /* ------------ Helper Functions -------------- */
-async function getFile(ipfs, cid) {
-  for await (const file of ipfs.get(cid)) {
-    console.log(file.type, file.path)
+async function decryptFile(ibe, privateKey, cipherText) {
+  const decryptResult = await ibe.decrypt(
+    ibeSetup.publicParameters,
+    privateKey,
+    cipherText);
 
-    if (!file.content) continue;
-
-    const content = []
-
-    for await (const chunk of file.content) {
-      content.push(chunk)
-    }
-
-    console.log(content.toString())
-  }
+    const promise = new Promise(resolve => {
+      resolve(decryptResult.plaintext);
+    })
+    return promise;
 }
 
 async function catFile(ipfs, cid) {
   for await (const chunk of ipfs.cat(cid)) {
     const text = new TextDecoder('utf-8').decode(chunk);
-    console.log(text);
-    createFileUrl(text)
+    //createFileUrl(text)
+    const promise = new Promise(resolve => {
+      resolve(text);
+    })
+    return promise;
   }
 }
 

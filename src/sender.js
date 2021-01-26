@@ -28,7 +28,9 @@ async function senderMain() {
 
   // get file contents
   const senderForm = document.forms['s-form'];
-  let inputFile = senderForm.elements['s-file'];
+  const inputFile = senderForm.elements['s-file'];
+  const rPidInput = senderForm.elements['s-to-pid'];
+
   let fileInfo = { };
   inputFile.addEventListener('change', () => {
     fileInfo.name = inputFile.files[0].name;
@@ -41,18 +43,18 @@ async function senderMain() {
   });
 
   // TODO: connect to peer
-  let receiverPid = ''
-  document
-    .getElementById('connect-btn')
-    .addEventListener('click', async () => {
-      receiverPid = senderForm.elements['s-to-pid'].value;
-      const fullAddr = '/ip4/127.0.0.1/tcp/4001/ipfs/' + receiverPid;
-      console.log(fullAddr);
-      await node.swarm.connect(fullAddr);
-    });
+  //document
+  //  .getElementById('connect-btn')
+  //  .addEventListener('click', async () => {
+  //    receiverPid = senderForm.elements['s-to-pid'].value;
+  //    const fullAddr = '/ip4/127.0.0.1/tcp/4001/ipfs/' + receiverPid;
+  //    console.log(fullAddr);
+  //    await node.swarm.connect(fullAddr);
+  //  });
 
 
   // share file on ipfs
+  let receiverPid = ''
   senderForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!fileInfo.hasOwnProperty('content')) {
@@ -65,9 +67,10 @@ async function senderMain() {
     fileInfo.hash = await getCid(node, fileInfo);
 
     if (encryptChecked) {
+      receiverPid = rPidInput.value;
       const encryptResult = await encryptFile(
         ibe, 
-        pid, 
+        receiverPid, 
         fileInfo);
       fileInfo.content = JSON.stringify(encryptResult);
     }
@@ -96,7 +99,6 @@ async function senderMain() {
 
 
 /* ------------ Helper Functions -------------- */
-
 async function encryptFile(ibe, pid, file) {
   const ibePubKey = pid.concat(file.hash);
   const identity = { name: ibePubKey };

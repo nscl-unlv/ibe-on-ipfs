@@ -46,14 +46,15 @@
       <h2>Receiver</h2>
       <p>Receiver Peer ID: <span id="r-pid"></span></p>
       <form name="r-form">
-        <label for="enc-cid">1.) Encrypted File CID</label>
-        <input type="text" id="enc-cid" name="enc-cid" />
-        <button name="get-file" id="get-file">Get File</button>
-        <br><br>
 
-        <label for="hash">2.) File Hash</label>
+        <label for="hash">1.) File Hash</label>
         <input type="text" id="hash" name="hash" />
         <button name="req-priv-key" id="req-priv-key">Request Private Key</button>
+        <br><br>
+
+        <label for="enc-cid">2.) Encrypted File CID</label>
+        <input type="text" id="enc-cid" name="enc-cid" />
+        <button name="get-file" id="get-file">Get File</button>
         <br><br>
 
         3.) <button name="decrypt-file" id="decrypt-file">Decrypt File</button> 
