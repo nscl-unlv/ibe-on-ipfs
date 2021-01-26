@@ -13,7 +13,7 @@ async function receiverMain() {
   const ipfsClient = createClient(`/ip4/127.0.0.1/tcp/${clientApi}`); 
   console.log('IPFS node is ready');
 
-
+  // show pid
   const nodeId = await ipfsClient.id();
   const pid = nodeId.id;
   document.getElementById('r-pid').innerText = pid;
@@ -22,16 +22,12 @@ async function receiverMain() {
   console.log('Initializing ID Based Encryption system...\n');
   const ibe = await cryptid.default.getInstance();
 
-
   const receiverForm = document.forms['r-form'];
-  const cidInput = receiverForm.elements['enc-cid'];
-  const hashInput = receiverForm.elements['hash'];
-  const getFileBtn = receiverForm.elements['get-file'];
-  const decryptBtn = receiverForm.elements['decrypt-file'];
-  const reqPrivKeyBtn = receiverForm.elements['req-priv-key'];
 
   // generate private key
   let privateKey = {}
+  const hashInput = receiverForm.elements['hash'];
+  const reqPrivKeyBtn = receiverForm.elements['req-priv-key'];
   reqPrivKeyBtn.addEventListener('click', async (e) => {
     e.preventDefault();
 
@@ -52,6 +48,8 @@ async function receiverMain() {
 
   // get file from IPFS
   let ibeFileObj = {}; 
+  const cidInput = receiverForm.elements['enc-cid'];
+  const getFileBtn = receiverForm.elements['get-file'];
   getFileBtn.addEventListener('click', async (e) => {
     e.preventDefault();
     const cid = cidInput.value;
@@ -66,11 +64,12 @@ async function receiverMain() {
 
   // decrypt file
   let decryptedText = ''
+  const decryptBtn = receiverForm.elements['decrypt-file'];
   decryptBtn.addEventListener('click', async (e) => {
     e.preventDefault();
     decryptedText = await decryptFile(ibe, privateKey, ibeFileObj.ciphertext);
-    
-    console.log(decryptedText);
+    createFileUrl(decryptedText);
+    console.log('file decrypted');
   });
 
   // TODO: handle GossipSub messages
@@ -89,7 +88,6 @@ async function decryptFile(ibe, privateKey, cipherText) {
     ibeSetup.publicParameters,
     privateKey,
     cipherText);
-
     const promise = new Promise(resolve => {
       resolve(decryptResult.plaintext);
     })
@@ -99,7 +97,6 @@ async function decryptFile(ibe, privateKey, cipherText) {
 async function catFile(ipfs, cid) {
   for await (const chunk of ipfs.cat(cid)) {
     const text = new TextDecoder('utf-8').decode(chunk);
-    //createFileUrl(text)
     const promise = new Promise(resolve => {
       resolve(text);
     })
