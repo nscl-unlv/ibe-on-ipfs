@@ -2,3 +2,4 @@ node_modules
 tags
 ibe-setup-paramters.txt
 .cache
+.DS_Store
