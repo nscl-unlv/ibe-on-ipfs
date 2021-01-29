@@ -26,6 +26,8 @@ do
 
     total_time=$(($total_time+$ELASPED_TIME))
     echo "elasped time: $ELASPED_TIME ms."
+    echo "deleting $FILE_OUT/$CID"
+    rm "$FILE_OUT/$CID"
 
     ((counter++))
 done 
