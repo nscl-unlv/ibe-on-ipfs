@@ -16,6 +16,9 @@ total_time=0
 
 until [ $counter -ge $ROUNDS ]
 do
+    echo "garbage colecting node..."
+    ipfs repo gc
+
     echo "downloading $line"
     START_TIME=$(($(gdate -u +%s%N)/1000000))
     ipfs get $CID --output="$FILE_OUT"
@@ -26,6 +29,7 @@ do
 
     total_time=$(($total_time+$ELASPED_TIME))
     echo "elasped time: $ELASPED_TIME ms."
+    
     echo "deleting $FILE_OUT/$CID"
     rm "$FILE_OUT/$CID"
 
