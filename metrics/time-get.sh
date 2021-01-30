@@ -9,7 +9,7 @@ SUMMARY_OUT="./results"
 ROUNDS=10
 
 echo "start download test."
-echo "file downloaded to $FILE_OUTPUT folder.\n"
+echo "file downloaded to $FILE_OUT folder."
 
 counter=0
 total_time=0
