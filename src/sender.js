@@ -26,11 +26,18 @@ async function senderMain() {
   console.log('Initializing ID Based Encryption system...\n');
   const ibe = await cryptid.default.getInstance();
 
-  // get file contents
+  // get form elements
   const senderForm = document.forms['s-form'];
   const inputFile = senderForm.elements['s-file'];
-  const rPidInput = senderForm.elements['s-to-pid'];
+  const recvPidInput = senderForm.elements['s-to-pid'];
 
+  // get receiver PID
+  let receiverPid = ''
+  recvPidInput.addEventListener('change', () => {
+    receiverPid = recvPidInput.value;
+  });
+
+  // get file contents
   let fileInfo = { };
   inputFile.addEventListener('change', () => {
     fileInfo.name = inputFile.files[0].name;
@@ -42,19 +49,7 @@ async function senderMain() {
     };
   });
 
-  // TODO: connect to peer
-  //document
-  //  .getElementById('connect-btn')
-  //  .addEventListener('click', async () => {
-  //    receiverPid = senderForm.elements['s-to-pid'].value;
-  //    const fullAddr = '/ip4/127.0.0.1/tcp/4001/ipfs/' + receiverPid;
-  //    console.log(fullAddr);
-  //    await node.swarm.connect(fullAddr);
-  //  });
-
-
-  // share file on ipfs
-  let receiverPid = ''
+  // encrypt and share file on ipfs
   senderForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!fileInfo.hasOwnProperty('content')) {
@@ -62,18 +57,12 @@ async function senderMain() {
       return;
     }
 
-    //const sendToPid = senderForm.elements['s-to-pid'].value;
-    const encryptChecked = senderForm.elements['encrypt'].checked;
     fileInfo.hash = await getCid(node, fileInfo);
-
-    if (encryptChecked) {
-      receiverPid = rPidInput.value;
-      const encryptResult = await encryptFile(
-        ibe, 
-        receiverPid, 
-        fileInfo);
-      fileInfo.content = JSON.stringify(encryptResult);
-    }
+    const encryptResult = await encryptFile(ibe, 
+                                            receiverPid, 
+                                            fileInfo);
+    console.log(encryptResult);
+    fileInfo.content = JSON.stringify(encryptResult);
 
     const cid = await addFileIpfs(node, fileInfo);
     document.getElementById('cid').innerText = cid;
@@ -81,19 +70,16 @@ async function senderMain() {
     // TODO: send shared CID to reciever
     //await node.pubsub.publish('test-topic', new TextEncoder().encode(cid));
 
-    if (encryptChecked) {
-      document.getElementById('hash').innerText = fileInfo.hash;
-    }
-
+    document.getElementById('hash').innerText = fileInfo.hash;
   });
 
   // TEST pubsub
-  document
-    .getElementById('pubsub-btn')
-    .addEventListener('click', async () => {
-      console.log('pubsub button pressed');
-      await ipfsClient.pubsub.publish('my-topic', 'test pubsub');
-    });
+  //document
+  //  .getElementById('pubsub-btn')
+  //  .addEventListener('click', async () => {
+  //    console.log('pubsub button pressed');
+  //    await ipfsClient.pubsub.publish('my-topic', 'test pubsub');
+  //  });
 
 } // end clientMain
 

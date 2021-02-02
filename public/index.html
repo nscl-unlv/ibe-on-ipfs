@@ -12,34 +12,32 @@
 <body>
   <div class="container">
 
-    <h1>ID Based Encryption on IPFS</h1>
-    <button id="sender-btn" type="button">I am the sender</button>
-    <button id="receiver-btn" type="button">I am the receiver</button>
-    <br><br>
+    <div class="jumbotron">
+      <h1>ID Based Encryption on IPFS</h1>
+      <button id="sender-btn" type="button">I am the sender</button>
+      <button id="receiver-btn" type="button">I am the receiver</button>
+    </div>
 
     <div id="sender-app" hidden>
       <h2>Sender</h2>
       <p>Sender Peer ID: <span id="s-pid"></span></p>
       <form name="s-form">
-        <label for="s-to-pid">Receiver Peer ID:</label>
+        <label for="s-to-pid">1.) Receiver Peer ID:</label>
         <input type="text" id="s-to-pid" name="s-to-pid" />
-        <button id="connect-btn" type="button">Connect</button>
         <br><br>
 
-        <label for="s-file">Select .txt file to Share:</label>
+        <label for="s-file">2.) Select .txt file to Share:</label>
         <input type="file" id="s-file" name="s-file" accept=".txt" /><br><br>
 
-        <input type="checkbox" id="encrypt" name="encrypt">
-        <label for="encrypt">encrypt</label><br><br>
-
-        <input type="submit" value="Share File" />
+        <input 
+          type="submit" 
+          value="3.) Encrypt & Share File" />
       </form>
       <p>
         Shared CID: <span id="cid"></span><br>
         File Hash*: <span id="hash"></span><br><br>
         <i>*CID of the original file if encrypted; however not shared in IPFS</i>
       </p>
-      <button id="pubsub-btn" type="button">Test Pubsub</button>
     </div>
 
     <div id="receiver-app" hidden>
