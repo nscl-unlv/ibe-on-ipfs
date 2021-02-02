@@ -16,7 +16,7 @@ async function senderMain() {
     init: { alogorithm: 'ed25519' },
     EXPERIMENTAL: { pubsub: true },
   });
-  console.log('IPFS node is ready');
+  console.log('IPFS node is ready.');
 
   const nodeId = await node.id();
   const pid = nodeId.id;
@@ -53,7 +53,7 @@ async function senderMain() {
   senderForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!fileInfo.hasOwnProperty('content')) {
-      console.log('no file to share.');
+      console.log('No file to share.');
       return;
     }
 
@@ -67,19 +67,18 @@ async function senderMain() {
     const cid = await addFileIpfs(node, fileInfo);
     document.getElementById('cid').innerText = cid;
     
-    // TODO: send shared CID to reciever
-    //await node.pubsub.publish('test-topic', new TextEncoder().encode(cid));
+    // send shared CID to reciever
+    const msgObj = {
+      hash: fileInfo.hash.toString(),
+      cid: cid.toString()
+    };
+    const msg = JSON.stringify(msgObj);
+    await ipfsClient
+      .pubsub
+      .publish(receiverPid, msg);
 
     document.getElementById('hash').innerText = fileInfo.hash;
   });
-
-  // TEST pubsub
-  //document
-  //  .getElementById('pubsub-btn')
-  //  .addEventListener('click', async () => {
-  //    console.log('pubsub button pressed');
-  //    await ipfsClient.pubsub.publish('my-topic', 'test pubsub');
-  //  });
 
 } // end clientMain
 

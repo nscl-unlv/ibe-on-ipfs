@@ -40,9 +40,9 @@ async function receiverMain() {
     //console.log(extractResult);
     privateKey = extractResult.privateKey;
     if (extractResult.success) {
-      console.log('retrieved private key');
+      console.log('Retrieved private key.');
     } else {
-      console.log('failed to retrieve private key');
+      console.log('Failed to retrieve private key.');
     }
   });
 
@@ -56,9 +56,9 @@ async function receiverMain() {
     const fileContents = await catFile(ipfsClient, cid);
     ibeFileObj = JSON.parse(fileContents);
     if (ibeFileObj.success) {
-      console.log('got encrypted file');
+      console.log('Downloaded encrypted file.');
     } else {
-      console.log('failed to get encrypted file');
+      console.log('Failed to get encrypted file.');
     }
   });
 
@@ -69,20 +69,38 @@ async function receiverMain() {
     e.preventDefault();
     decryptedText = await decryptFile(ibe, privateKey, ibeFileObj.ciphertext);
     createFileUrl(decryptedText);
-    console.log('file decrypted');
+    console.log('File decrypted.');
   });
 
   // TODO: handle GossipSub messages
-  const topic = 'my-topic';
-  const handleMsg = msg => {
-    console.log(msg)
-  };
+  const topic = pid;
   await ipfsClient.pubsub.subscribe(topic, handleMsg);
-  console.log(`Subscribed to topic: ${topic}`);
+  console.log(`Subscribed to self as topic: ${topic}`);
 } // end clientMain
 
 
 /* ------------ Helper Functions -------------- */
+function handleMsg(msg) {
+    const msgData = new TextDecoder('utf-8').decode(msg.data);
+    const msgDataObj = JSON.parse(msgData);
+
+    const msgFrom = document.createElement('LI');
+    const fromNode = document.createTextNode(`Sender: ${msg.from}`);
+    msgFrom.appendChild(fromNode);
+
+    const msgCid = document.createElement('LI');
+    const cidNode = document.createTextNode(`CID: ${msgDataObj.cid}`);
+    msgCid.appendChild(cidNode);
+
+    const msgHash = document.createElement('LI');
+    const hashNode = document.createTextNode(`File hash: ${msgDataObj.hash}`)
+    msgHash.appendChild(hashNode);
+
+    document.getElementById('messages').appendChild(msgFrom);
+    document.getElementById('messages').appendChild(msgCid);
+    document.getElementById('messages').appendChild(msgHash);
+}
+
 async function decryptFile(ibe, privateKey, cipherText) {
   const decryptResult = await ibe.decrypt(
     ibeSetup.publicParameters,

@@ -36,7 +36,7 @@
       <p>
         Shared CID: <span id="cid"></span><br>
         File Hash*: <span id="hash"></span><br><br>
-        <i>*CID of the original file if encrypted; however not shared in IPFS</i>
+        <i>*CID of the original file if encrypted; however not shared on IPFS</i>
       </p>
     </div>
 
@@ -58,11 +58,15 @@
         3.) <button name="decrypt-file" id="decrypt-file">Decrypt File</button> 
         <br><br>
 
-        4.) <a id="dl-link" download="decrypted_file.txt" class="btn btn-primary" role="button" href="">
+        4.) <a id="dl-link" download="decrypted_file.txt" class="btn btn-secondary" role="button" href="">
           Download File</a>
         <br><br>
       </form>
-      </div>
+
+      <h3>GossipSub Messages</h3>
+      <ul id="messages" style="list-style-type:none;">
+      </ul>
+    </div>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
