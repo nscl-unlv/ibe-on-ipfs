@@ -26,17 +26,16 @@
         <input type="text" id="s-to-pid" name="s-to-pid" />
         <br><br>
 
-        <label for="s-file">2.) Select .txt file to Share:</label>
+        <label for="s-file">2.) Select .txt file:</label>
         <input type="file" id="s-file" name="s-file" accept=".txt" /><br><br>
 
         <input 
           type="submit" 
-          value="3.) Encrypt & Share File" />
+          value="3.) Encrypt & Add File to IPFS" />
       </form>
       <p>
-        Shared CID: <span id="cid"></span><br>
-        File Hash*: <span id="hash"></span><br><br>
-        <i>*CID of the original file if encrypted; however not shared on IPFS</i>
+        File CID: <span id="cid"></span><br>
+        File Hash: <span id="hash"></span><br><br>
       </p>
     </div>
 
@@ -45,12 +44,12 @@
       <p>Receiver Peer ID: <span id="r-pid"></span></p>
       <form name="r-form">
 
-        <label for="hash">1.) File Hash</label>
+        <label for="hash">1.) File Hash: </label>
         <input type="text" id="hash" name="hash" />
         <button name="req-priv-key" id="req-priv-key">Request Private Key</button>
         <br><br>
 
-        <label for="enc-cid">2.) Encrypted File CID</label>
+        <label for="enc-cid">2.) Encrypted File CID: </label>
         <input type="text" id="enc-cid" name="enc-cid" />
         <button name="get-file" id="get-file">Get File</button>
         <br><br>
