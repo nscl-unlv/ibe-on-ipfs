@@ -54,10 +54,10 @@ There are two forms, the Sender and Receiver. The Sender uploads file and uses t
 
 Start By opening two tabs in the browser, select one to be the Sender and the other to be the Reciever. As the Sender, copy and paste the Receiver's peer-id, and select a text file to upload. Click Encrypt and Add File to IPFS. The file will then be encrypted with IBE, using the Receiver's peer-id concatenated with plaintext file's hash, as the public key. Once encrypted, the file is added (shared) to the IPFS network. Lastly a Pubsub message is sent to the Receiver which includes the CID and plaintext file hash. To see the encrypted file, you can open the browser console and inspect the cipherText object.
 
-<img src="/assets/imgs/sender-form-2.png" width="600px" />
+<img src="/assets/imgs/sender-form-2.png" />
 
 Go to the Receiver form. The GossipSub message should have appeared at the bottom. Open the browser console, and you will notice the node has subscribed to the topic of its own peer-id, which it how it was able to receive the GossipSub messages. Copy the file hash in into box 1.) and click Request Private Key. Next, copy the CID into box 2.) and click Get File. This will download the file from IPFS. Click Decrypt File to decrypt the file. In the background, the Receiver retrieves the private key by presenting peer-id and plaintext file hash to the Private Key Generator (PKG)*. Once the key is retrieved, the Receiver can decrypt the file. Lasly, click  Donwload File to download the orginal plaintext file. 
 
-<img src="/assets/imgs/reciever-form-2.png" width="600px" />
+<img src="/assets/imgs/reciever-form-2.png" />
 
 *For this demo, the Reciever has the master key to generate private keys, essentially acting as the PKG itself. In a real world senario, the PKG would be on a seperate server and only it would have the master key. Upon a key request, the PKG generates a node's private key and sends it back to the requesting node. Addtionally, the private should be sent through a secure channel.
